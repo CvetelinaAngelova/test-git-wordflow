@@ -116,17 +116,6 @@ dependencies:
       max_memory: "256mb"
       eviction_policy: allkeys-lru
 
-  rabbitmq:
-    type: queue
-    engine: rabbitmq
-    version: "3.12"
-    config:
-      vhost: /app
-      queues:
-        - jobs
-        - retries
-        - dead-letter
-
 tags:
   - onboarding
   - test
