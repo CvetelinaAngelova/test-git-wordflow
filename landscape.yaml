@@ -79,9 +79,6 @@ services:
       DB_HOST: postgresql
       CACHE_HOST: redis
       LOG_LEVEL: info
-    dependencies:
-      - postgresql
-      - redis
 
   worker:
     type: background
@@ -95,9 +92,6 @@ services:
     environment_vars:
       QUEUE_URL: amqp://rabbitmq:5672
       LOG_LEVEL: warn
-    dependencies:
-      - postgresql
-      - rabbitmq
 
 dependencies:
   redis:
