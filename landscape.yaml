@@ -100,14 +100,6 @@ services:
       - rabbitmq
 
 dependencies:
-  postgresql:
-    type: database
-    engine: postgresql
-    version: "14"
-    config:
-      max_connections: 100
-      storage_gb: 20
-
   redis:
     type: cache
     engine: redis
