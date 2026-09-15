@@ -1,0 +1,133 @@
+landscape:
+  name: test-landscape
+  description: Test landscape for onboarding validation
+  version: "1.0.0"
+  owner:
+    team: platform-engineering
+    contact: platform-team@example.com
+    slack: "#platform-engineering"
+
+environments:
+  dev:
+    region: eu-west-1
+    tier: development
+    auto_deploy: true
+    scaling:
+      min_replicas: 1
+      max_replicas: 2
+    network:
+      vpc: vpc-dev-001
+      subnets:
+        - subnet-dev-a
+        - subnet-dev-b
+
+  staging:
+    region: eu-west-1
+    tier: staging
+    auto_deploy: false
+    scaling:
+      min_replicas: 1
+      max_replicas: 4
+    network:
+      vpc: vpc-staging-001
+      subnets:
+        - subnet-staging-a
+        - subnet-staging-b
+
+  production:
+    region: eu-west-1
+    tier: production
+    auto_deploy: false
+    scaling:
+      min_replicas: 2
+      max_replicas: 10
+    network:
+      vpc: vpc-prod-001
+      subnets:
+        - subnet-prod-a
+        - subnet-prod-b
+        - subnet-prod-c
+
+services:
+  frontend:
+    type: web
+    language: typescript
+    runtime:
+      port: 3000
+      health_check: /health
+      readiness_check: /ready
+    resources:
+      cpu: "500m"
+      memory: "512Mi"
+    environment_vars:
+      API_URL: https://api.example.com
+      LOG_LEVEL: info
+    dependencies:
+      - backend-api
+
+  backend-api:
+    type: api
+    language: java
+    runtime:
+      port: 8080
+      health_check: /actuator/health
+      readiness_check: /actuator/ready
+    resources:
+      cpu: "1000m"
+      memory: "1Gi"
+    environment_vars:
+      DB_HOST: postgresql
+      CACHE_HOST: redis
+      LOG_LEVEL: info
+    dependencies:
+      - postgresql
+      - redis
+
+  worker:
+    type: background
+    language: python
+    runtime:
+      health_check: null
+      concurrency: 4
+    resources:
+      cpu: "250m"
+      memory: "256Mi"
+    environment_vars:
+      QUEUE_URL: amqp://rabbitmq:5672
+      LOG_LEVEL: warn
+    dependencies:
+      - postgresql
+      - rabbitmq
+
+dependencies:
+  postgresql:
+    type: database
+    engine: postgresql
+    version: "14"
+    config:
+      max_connections: 100
+      storage_gb: 20
+
+  redis:
+    type: cache
+    engine: redis
+    version: "7"
+    config:
+      max_memory: "256mb"
+      eviction_policy: allkeys-lru
+
+  rabbitmq:
+    type: queue
+    engine: rabbitmq
+    version: "3.12"
+    config:
+      vhost: /app
+      queues:
+        - jobs
+        - retries
+        - dead-letter
+
+tags:
+  - onboarding
+  - test
+  - platform
